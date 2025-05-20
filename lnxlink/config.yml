@@ -1,0 +1,67 @@
+mqtt:
+  prefix: lnxlink
+  clientId: {server-name]
+  server: 192.168.86.2
+  port: 1883
+  auth:
+    user: homeassistant
+    pass: {mqqpassword}
+    tls: false
+    keyfile: ''
+    certfile: ''
+    ca_certs: ''
+  discovery:
+    enabled: true
+  lwt:
+    enabled: true
+    qos: 1
+    retain: true
+update_interval: 120
+hass_url: http://192.168.86.2:8123
+hass_api: {apitoken}
+modules:
+- update
+- temperature
+- sys_updates
+- shutdown
+- restful
+- restart
+- required_restart
+- network
+- memory
+- disk_usage
+- bash
+- docker
+- cpu
+custom_modules: null
+exclude: null
+settings:
+  docker:
+    include: []
+    exclude: []
+  systemd: null
+  gpio:
+    inputs: null
+    outputs: null
+  hotkeys: null
+  disk_usage:
+    include_disks: []
+    exclude_disks: []
+  statistics: https://analyzer.bkbilly.workers.dev
+  bash:
+    expose:
+    - name: System Cleanup
+      command: sudo bash /home/n0tme/lnxlink/scripts/cleanup.sh
+    - name: Disk Checker
+      command: sudo bash /home/n0tme/lnxlink/scripts/disk_checker.sh
+    allow_any_command: true
+  mounts:
+    autocheck: true
+    directories: []
+  ir_remote:
+    receiver: null
+    transmitter: null
+    buttons: []
+  restful:
+    port: 8112
+update_on_change: true
