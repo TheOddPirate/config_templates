@@ -2,6 +2,8 @@
 # Having some problems with my google nest repeaters going offline,
 # this script was made to check if the mac is found on my network and
 # trigger a execution in home assistant to restart the sockets if its offline
+# REMEMBER TO PUT THIS IN visudo
+# "yourusernamegoeshere ALL=(ALL) NOPASSWD: /usr/bin/arp-scan"
 # Repeater MAC-adresser
 declare -A REPEATERS
 REPEATERS["Kjokkenet"]="e4:5e:1b:8f:19:08"
@@ -26,7 +28,7 @@ fi
 # Søk etter MAC i nettverket
 for NAME in "${!REPEATERS[@]}"; do
     MAC=${REPEATERS[$NAME]}
-    IP=$(arp-scan --localnet --interface=enp1s0 | grep "$MAC" | awk '{print $1}')
+    IP=$(sudo arp-scan --localnet --interface=enp1s0 | grep "$MAC" | awk '{print $1}')
 
     if [ -z "$IP" ]; then
         echo "$NAME er OFFLINE"
