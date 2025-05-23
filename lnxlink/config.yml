@@ -1,6 +1,6 @@
 mqtt:
   prefix: lnxlink
-  clientId: {server-name]
+  clientId: {server-name}
   server: 192.168.86.2
   port: 1883
   auth:
@@ -51,9 +51,11 @@ settings:
   bash:
     expose:
     - name: System Cleanup
-      command: sudo bash /home/n0tme/lnxlink/scripts/cleanup.sh
+      command: sudo bash /home/{current_user}/lnxlink/scripts/cleanup.sh
     - name: Disk Checker
-      command: sudo bash /home/n0tme/lnxlink/scripts/disk_checker.sh
+      command: sudo bash /home/{current_user}/lnxlink/scripts/disk_checker.sh
+    - name: Offline Checker
+      command: sudo bash /home/{current_user}/lnxlink/scripts/offline_checker.sh
     allow_any_command: true
   mounts:
     autocheck: true
