@@ -39,6 +39,18 @@ echo "Now we need some information about your CrowdSec setup."
 read -p "CrowdSec enrollment key: " CROWDSEC_KEY
 CROWDSEC_ENROLL="sudo cscli console enroll -e context $CROWDSEC_KEY"
 
+
+#Swapfile
+CURRENT_SWAP_SIZE=$(sudo swapon --show | awk '/file/ {print $3}')
+CURRENT_SWAP_SIZE_MB=$(echo "$CURRENT_SWAP_SIZE" / 1024 | bc)
+DESIRED_SWAP_SIZE=$CURRENT_SWAP_SIZE_MB
+SWAP_PATH=$(swapon --show | awk 'NR==2{print $1}')
+read -t 30 -p "Do you want a custom swapfile size or keep the current? (default: $CURRENT_SWAP_SIZE_MB MB): " -e -i "$CURRENT_SWAP_SIZE_MB" DESIRED_SWAP_SIZE
+
+if [ ! -f $SWAP_PATH ]; then
+    SWAP_PATH="/swamp.img"
+fi
+
 # Function to check if a command is installed
 is_installed() {
     command -v "$1" > /dev/null 2>&1
@@ -213,4 +225,36 @@ if ! is_installed zramctl; then
     echo ">> Installing  zram-tools..."
     sudo apt-get install -y  zram-tools   > /dev/null 
 fi
+
+
+if CURRENT_SWAP_SIZE_MB != DESIRED_SWAP_SIZE; then
+    # Check if swapfile exists
+    echo "Fixing your swapfile size"
+    if [ -f $SWAP_PATH ]; then
+        echo "Swapfile exists. Current size: $CURRENT_SWAP_SIZE_MB MB"
+        # Disable swap
+        sudo swapoff $SWAP_PATH
+        # Resize swapfile
+        sudo dd if=/dev/zero of=$SWAP_PATH bs=1M count=$DESIRED_SWAP_SIZE oflag=append conv=notrunc
+    	# Set permissions
+    	sudo chmod 600 $SWAP_PATH
+    	# Initialize swapfile
+    	sudo mkswap $SWAP_PATH
+    	# Enable swap
+    	sudo swapon $SWAP_PATH
+    	echo "Swapfile resized to $DESIRED_SWAP_SIZE MB."
+    else
+    	echo "Swapfile does not exist. Creating new swapfile..."
+    	# Create new swapfile
+    	sudo dd if=/dev/zero of=$SWAP_PATH bs=1M count=$DESIRED_SWAP_SIZE
+    	# Set permissions
+    	sudo chmod 600 $SWAP_PATH
+    	# Initialize swapfile
+    	sudo mkswap $SWAP_PATH 
+    	# Enable swap
+    	sudo swapon $SWAP_PATH
+    	echo "New swapfile created with size $DESIRED_SWAP_SIZE MB."
+    fi
+fi
+
 echo "✅ Setup complete! Your server is now configured with all services and optimizations."
