@@ -221,11 +221,14 @@ for pkg in htop ncdu iotop; do
         sudo apt-get install -y "$pkg"  > /dev/null 
     fi
 done
+if ! is_installed sensors; then
+    echo ">> Installing  lm-sensors..."
+    sudo apt-get install -y  lm-sensors   > /dev/null 
+fi
 if ! is_installed zramctl; then
     echo ">> Installing  zram-tools..."
     sudo apt-get install -y  zram-tools   > /dev/null 
 fi
-
 
 if CURRENT_SWAP_SIZE_MB != DESIRED_SWAP_SIZE; then
     # Check if swapfile exists
