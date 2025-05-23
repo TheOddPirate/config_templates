@@ -1,3 +1,13 @@
+"""
+Gets the active window
+This module checks the same way as lnxlink original module,
+but it has a extra check to detect if you are on wayland
+if you are on wayland and gnome it installs a gnome extension to allow you to find the 
+active window title, if you are on x11 it used the default way that comes with lnxlink
+
+we also tried to add a way to do this for kde and wayland, but as i am not a kde user, that was implemented with help 
+from the llm claude and i need some feedback if it works or not
+"""
 from lnxlink.modules.scripts.helpers import (
     import_install_package,
     syscommand
